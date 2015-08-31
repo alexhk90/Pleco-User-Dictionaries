@@ -1,0 +1,18 @@
+2015-08-31 MoE Minnan Pleco User Dictionary Conversion Notes
+
+- Data source: https://github.com/g0v/moedict-data-twblg/blob/master/dict-twblg.json
+
+- JSON format (by inspection):
+- - Top-level entries (array, length 13498):
+- - Keys = title, radical, heteronyms, stroke_count, non_radical_stroke_count;
+- - heteronyms (array):
+- - - id, trs, reading, synonyms, definitions;
+- - - definitions (array):
+- - - - type, def, example (array).
+
+- Parsing logic:
+- - For each top-level entry:
+- - - For each heteronym:
+- - - - Hanzi = title;
+- - - - Pinyin = trs;
+- - - - Definition = definitions (type, def, examples) + synonyms.
