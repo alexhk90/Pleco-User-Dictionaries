@@ -1,0 +1,29 @@
+20130506 SayJack Combined Tables
+- Combined the two SayJack Traditional to Simplified tables:
+1. "Traditional to Simplified Chinese Conversion Table"
+http://www.sayjack.com/chinese/traditional-to-simplified-chinese-conversion-table/
+> TSTable-flat.csv
+2. "Chinese Characters Which Are Both Traditional and Simplified"
+http://www.sayjack.com/chinese/chinese-characters-both-traditional-and-simplified/
+> TSBoth-flat.csv
+(See 20130506 Parse SayJack HTML Tables for parsing to flat CSV files.)
+
+CSV file structure:
+Traditional, Simplified, Pinyin, Frequency, Notes
+
+1. Import to single file (SayJackCombined.ods)
+
+Note: Total Count = 7393 (=2693 (=2674+19) + 4700)
+
+2. Check for duplication:
+
+- Create Count and Uniques columns on Traditional.
+- Split out by Uniques (One) and Many.
+
+3. One
+
+- Filter out for Both (Notes=0) as no conversion for these.
+
+4. Many
+
+- Filter out for Both (Notes=0) as already convered by Tables (Notes=9).

@@ -1,0 +1,24 @@
+Traditional to Simplified Chinese Character Conversion
+
+Used to convert traditional headwords in MoEDict to simplified, but should be more generally applicable.
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-6#post-29852)
+---
+The Traditional to Simplified conversion was done using information from the SayJack website and information feng posted in this thread (thanks again feng :)).
+The information was processed into the three files attached:
+Conversion-Always
+= simple one-to-one mapping cases (always replace the Traditional with the Simplified for these cases);
+Conversion-If
+= convert if the Pinyin matches (replace Traditional with Simplified for {Traditional, Pinyin});
+Conversion-IfNot
+= convert if the Pinyin does not match (replace Traditional with Simplified for {Traditional, !Pinyin}).
+---
+
+The source data and three output files mentioned above are included in this directory.
+
+Note: "Conversion-AlwaysNot" file also included but not currently used.
+
+---
+Updated the four output files with data from Unihan.
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-8#post-30492)
