@@ -17,6 +17,7 @@ Taiwan Ministry of Eduction 兩岸常用詞典 (LACD):
 * [Source data](https://github.com/g0v/moedict-data-csld)
 
 ### Minnan
+* [Pleco user dictionary conversion](MoE-Minnan) (work in progress)
 * [Pleco forums discussion thread](http://www.plecoforums.com/threads/moe-minnan-and-hakka-dictionaries.4938/)
 
 ### Hakka
