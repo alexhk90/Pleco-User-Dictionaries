@@ -228,3 +228,84 @@ select count(*) from dict where title!=simptitle;
 .output MoEDict-04c-Simp02b-cards.txt
 select simptitle||'['||title||']',pinyin,def from dict;
 
+---
+20130831 Conversion-Simp03-Unihan
+- Addition of characters from Unihan Traditional-Simplified conversions (kSimplifiedVariant) to previous conversion tables (see Conversion-Simp02b).
+- Starting point is resulting file "MoEDict-04c-Simp02b.sqlite3" from Conversion-Simp02b, though relatively easy to merge into new complete instructions for "MoEDict-04c-Simp03".
+
+0. Obtain data from Unihan.
+- Use Unihan_Variants.txt.
+- Convert characters from Unicode references to actual characters.
+- Extract only kSimplifiedVariant entries.
+- Resulting file simp.txt.
+- Convert to CSV: "sed 's/\t/,/g' simp.txt > simp.csv".
+- Clean up resulting CSV file if required (copy/paste to new file "simpA.csv" seemed to be required for some reason).
+
+1. Import Unihan data.
+- ".separator ','"
+- ".import simpA.csv Unihan"
+- select count(*) from Unihan;
+3041
+
+2. Manual clean up / additions
+- Add 滷=卤:
+"insert into Unihan Values('滷','Yiliya','卤');"
+
+3. Remove if already handled in other table.
+- Conversion-Always:
+select count(*) from Always;
+2662
+select count(*) from Unihan,Always where Always.Traditional = Unihan.Traditional;
+2375
+delete from Unihan where exists (select * from Always where Unihan.Traditional = Always.Traditional);
+select count(*) from Unihan;
+667
+- Conversion-If:
+select count(*) from AlwaysIf;
+5
+select count(*) from Unihan,AlwaysIf where AlwaysIf.Traditional = Unihan.Traditional;
+3
+delete from Unihan where exists (select * from AlwaysIf where Unihan.Traditional = AlwaysIf.Traditional);
+select count(*) from Unihan;
+664
+- Conversion-IfNot:
+select count(*) from AlwaysIfNot;
+5
+select count(*) from Unihan,AlwaysIfNot where AlwaysIfNot.Traditional = Unihan.Traditional;
+2
+delete from Unihan where exists (select * from AlwaysIfNot where Unihan.Traditional = AlwaysIfNot.Traditional);
+select count(*) from Unihan;
+662
+
+- Check multi-character conversions in above tables:
+select * from Always where Length(Traditional) > 1;
+藉口,借口,feng,借口、凭借，otherwise 藉
+憑藉,凭借,feng,借口、凭借，otherwise 藉
+select * from Unihan where Traditional like '%藉%';
+select * from Unihan where Traditional like '%憑%';
+select * from Unihan where Traditional like '%藉%';
+(no results found so OK)
+
+- Check if any multi-character conversions (i.e. T:S;S) remain in the Unihan tables:
+select * from Unihan where Simplified like '%;%';
+(no results found so OK)
+
+3. Merge Unihan into Conversion-AlwaysIf table.
+select count(*) from Always;
+2662
+select count(*) from Unihan;
+662
+- Move all Unihan data into Always:
+insert into Always select Unihan.Traditional, Unihan.Simplified, 'Unihan', Unihan.Type from Unihan;f
+select count(*) from Always;
+3324
+
+4. Re-run Conversion-Simp02b from import of dictionary data.
+- Firstly clear old data:
+drop table dict;
+- Now start from the following line: 
+"-- Import dictionary data, and duplicate (Traditional) title:"
+- Should be the same until count:
+select count(*) from dict where title!=simptitle;
+102050
+- Change output file to "MoEDict-04c-Simp03-cards.txt".
