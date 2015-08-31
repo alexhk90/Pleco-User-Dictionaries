@@ -1,0 +1,74 @@
+20130327 MoEDict
+
+Source: dict-revised.sqlite3.bz2 from http://kcwu.csie.org/%7Ekcwu/moedict/dict-revised.sqlite3.bz2
+Information: http://3du.tw/
+ 
+- Extract to dict-revised.sqlite3 and open with sqlite:
+.schema reveals table structure:
+definitions link to heteronyms link to entries (link to dicts but only 1 dict so unnecessary).
+Note: Counts: definitions = 213486; heteronyms = 165825; entries = 163093; dicts = 1.
+ 
+- Convert missing non Big 5 characters to Unicode:
+use moedict-epub / db2unicode.pl and work on output (dict-revised.unicode.sqlite3).
+Note: the Perl script does not convert all missing characters.
+ 
+- Create new table (combined) with only relevant columns:
+create table combined as
+select definitions.id, entries.title, heteronyms.pinyin,
+definitions.type, definitions.def, definitions.example, definitions.quote,
+definitions.synonyms, definitions.antonyms, definitions.link 
+from definitions, heteronyms, entries
+where definitions.heteronym_id = heteronyms.id and heteronyms.entry_id = entries.id;
+ 
+- Reformat definitions into single definition field and use Pleco flashcard special characters (newlines, bold):
+---
+<{type}> {def}
+ 
+{example}
+ 
+[b]Quote:[/b] {quote}
+ 
+[b]Synonyms:[/b] {synonyms}
+ 
+[b]Antonyms:[/b] {antonyms}
+ 
+[b]Link:[/b] {link}
+---
+alter table combined add column newdef;
+ 
+update combined
+set newdef = case when coalesce(type, '') = ''
+then type else '<'||type||'> ' end;
+ 
+update combined
+set newdef = case when coalesce(newdef, '') = ''
+then def else newdef||def end;
+Note: The case statement here solves an issue where newdef not updated if currently null.
+ 
+update combined
+set newdef = case when coalesce(example, '') = ''
+then newdef else newdef||''||example end;
+ 
+update combined
+set newdef = case when coalesce(quote, '') = ''
+then newdef else newdef||''||'Quote: '||quote end;
+(and repeat for synonyms, antonyms, link)
+update combined set newdef = case when coalesce(synonyms, '') = ''
+then newdef else newdef||''||'Synonyms: '||synonyms end;
+update combined set newdef = case when coalesce(antonyms, '') = ''
+then newdef else newdef||''||'Antonyms: '||antonyms end;
+update combined set newdef = case when coalesce(link, '') = ''
+then newdef else newdef||''||'Link: '||link end;
+Note: Consider hyperlinks for link? Difficult if link has more than just the other entry/entries.
+ 
+- Output into Pleco flashcard format:
+{characters}{ TAB }{pinyin}{ TAB }{definition}
+.mode tabs
+.output MoEDict-cards.txt
+select title, pinyin, newdef from combined;
+ 
+- Import MoEDict-cards.txt into a Pleco user dictionary:
+Settings - Manage Dictionaries - Add User - Create New
+Import Entries
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/#post-29295)
