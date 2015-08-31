@@ -8,7 +8,7 @@
 - Conversion-IfNot.csv has characters to convert if Pinyin does not match.
 - Conversion-AlwaysNot.csv has characters to not convert.
 
-sqlite3 MoEDict-04c-Simp02a.sqlite3
+sqlite3 MoEDict-04c-Simp02b.sqlite3
 
 -- Import conversion tables:
 .separator ','
@@ -37,7 +37,7 @@ update dict set simptitle=title;
 1. Conversion-Always.
 - Loop through Conversion-Always doing a search/replace for the conversion (Traditional to Simplified).
 
-dbfile="MoEDict-04c-Simp02a.sqlite3";
+dbfile="MoEDict-04c-Simp02b.sqlite3";
 minrow=$(sqlite3 $dbfile "select min(rowid) from Always;");
 maxrow=$(sqlite3 $dbfile "select max(rowid) from Always;");
 for (( j=minrow; j<=maxrow; j++ ))
@@ -65,7 +65,7 @@ done
 - Alternately (and better), create temporary table with character position (charpos) field and then extract the relevant pinyin by looping through rows of this temporary table.
 Compare this extracted pinyin to decide whether or not to replace for this entry.
 
-dbfile="MoEDict-04c-Simp02a.sqlite3";
+dbfile="MoEDict-04c-Simp02b.sqlite3";
 iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIf;");
 imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIf;");
 for (( i=iminrow; i<=imaxrow; i++ ))
@@ -103,7 +103,7 @@ do
 done
 
 # manual checks:
-dbfile="MoEDict-04c-Simp02a.sqlite3";
+dbfile="MoEDict-04c-Simp02b.sqlite3";
 iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIf;");
 imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIf;");
 for (( i=iminrow; i<=imaxrow; i++ ))
@@ -122,7 +122,7 @@ do
 	sqlite3 $dbfile "select title,pinyin,simptitle from dict where title like '%$trad%' and pinyin not like '%$pinyin%' and simptitle like '%$simp%';";
 done
 
-# correct exceptions from above:
+# fix exceptions from above:
 千里之堤，潰於蟻穴|qiān lǐ zhī tí kuì yú yǐ xuè|千里之堤，潰於蟻穴
 千里之行，始於足下|qiān lǐ zhī xíng shǐ yú zú xià|千里之行，始於足下
 己所不欲，勿施於人|jǐ suǒ bù yù wù shī yú rén|己所不欲，勿施於人
@@ -145,7 +145,7 @@ update dict set simptitle = replace(simptitle, '於','于') where title='防民�
 3. Conversion-IfNot.
 - (as above but replace AlwaysIf with AlwaysIfNot and like with not like when comparing pinyin in temporary table for each row in AlwaysIfNot)
 
-dbfile="MoEDict-04c-Simp02a.sqlite3";
+dbfile="MoEDict-04c-Simp02b.sqlite3";
 iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIfNot;");
 imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIfNot;");
 for (( i=iminrow; i<=imaxrow; i++ ))
@@ -183,7 +183,7 @@ do
 done
 
 # manual checks:
-dbfile="MoEDict-04c-Simp02a.sqlite3";
+dbfile="MoEDict-04c-Simp02b.sqlite3";
 iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIfNot;");
 imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIfNot;");
 for (( i=iminrow; i<=imaxrow; i++ ))
@@ -202,7 +202,7 @@ do
 	sqlite3 $dbfile "select title,pinyin,simptitle from dict where title like '%$trad%' and pinyin like '%$pinyin%' and simptitle like '%$simp%';";
 done
 
-# manually correct exceptions from above:
+# manually fix exceptions from above:
 # (note some of the exceptions are due to pinyin of other characters, these are omitted from the following)
 防人之口，甚於防川|fáng rén zhī kǒu shèn yú fáng chuān|防人之口，什于防川
 防民之口，甚於防川|fáng mín zhī kǒu shèn yú fáng chuān|防民之口，什于防川
@@ -210,19 +210,21 @@ done
 # manual inspection of above indicates all (of above) should be replaced:
 update dict set simptitle = replace(simptitle, '什','甚') where title='防人之口，甚於防川' and pinyin='fáng rén zhī kǒu shèn yú fáng chuān';
 update dict set simptitle = replace(simptitle, '什','甚') where title='防民之口，甚於防川' and pinyin='fáng mín zhī kǒu shèn yú fáng chuān';
-# re-running manual exception check should now lead to zero true exceptions (as mentioned before will be some due to other matching pinyin of other characters)
+# re-running manual exception check should now lead to zero true exceptions (as mentioned before will be some (5) due to other matching pinyin of other characters)
 
-# check (for MoEDict-04c-Simp02a.sqlite3)
+# check (for MoEDict-04c-Simp02b.sqlite3)
 select count(*) from dict where title!=simptitle;
-101430
+101440
 
 (end)
 
 4. Conversion-AlwaysNot.
 (can use to generate list of unconsidered characters)
 
+(not implemented)
+
 5. Output to Pleco flashcard format.
 .mode tabs
-.output MoEDict-04c-Simp02a-cards.txt
+.output MoEDict-04c-Simp02b-cards.txt
 select simptitle||'['||title||']',pinyin,def from dict;
 
