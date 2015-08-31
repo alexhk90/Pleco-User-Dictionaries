@@ -1,4 +1,4 @@
-/* 20150120-MoEDict-Pleco-05
+/* 20150123-MoEDict-Pleco-05
 Info: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/
 
 Data: http://kcwu.csie.org/~kcwu/moedict/
@@ -12,6 +12,7 @@ Official: http://dict.revised.moe.edu.tw/
 - Convert JSON to SQLite (using scripts from moedict-process):
 sqlite3 dict-revised.sqlite3 < dict-revised.schema
 python2 convert_json_to_sqlite.py
+Note: This step is only required if JSON but not SQLite database updated at source.
 
 - Now can open with sqlite to check data (counts):
 sqlite3 dict-revised.sqlite3
@@ -27,7 +28,7 @@ Note: the Perl script does not convert all missing characters.
 
 - Open the resulting file and run this script:
 sqlite3 dict-revised.unicode.sqlite3
-.read 20150120-MoEDict-Pleco-05.sql
+.read 20150123-MoEDict-Pleco-05.sql
 
 - Export to Pleco flashcard format:
 .mode tabs
@@ -107,23 +108,23 @@ UPDATE combined SET def = REPLACE(def, '(2 )', '(2) ') WHERE title = '田鼠'
 UPDATE combined SET def = REPLACE(def, '(1)', '(1) ') WHERE title = '田鼠';
 
 -- Replace with bracketed character symbols:
-UPDATE combined SET def = REPLACE(def, '(1)', '⑴');
-UPDATE combined SET def = REPLACE(def, '(2)', '⑵');
-UPDATE combined SET def = REPLACE(def, '(3)', '⑶');
-UPDATE combined SET def = REPLACE(def, '(4)', '⑷');
-UPDATE combined SET def = REPLACE(def, '(5)', '⑸');
-UPDATE combined SET def = REPLACE(def, '(6)', '⑹');
-UPDATE combined SET def = REPLACE(def, '(7)', '⑺');
-UPDATE combined SET def = REPLACE(def, '(8)', '⑻');
-UPDATE combined SET def = REPLACE(def, '(9)', '⑼');
-UPDATE combined SET def = REPLACE(def, '(10)', '⑽');
+UPDATE combined SET def = REPLACE(def, '(1)', '⑴') WHERE def LIKE '%(1)%';
+UPDATE combined SET def = REPLACE(def, '(2)', '⑵') WHERE def LIKE '%(2)%';
+UPDATE combined SET def = REPLACE(def, '(3)', '⑶') WHERE def LIKE '%(3)%';
+UPDATE combined SET def = REPLACE(def, '(4)', '⑷') WHERE def LIKE '%(4)%';
+UPDATE combined SET def = REPLACE(def, '(5)', '⑸') WHERE def LIKE '%(5)%';
+UPDATE combined SET def = REPLACE(def, '(6)', '⑹') WHERE def LIKE '%(6)%';
+UPDATE combined SET def = REPLACE(def, '(7)', '⑺') WHERE def LIKE '%(7)%';
+UPDATE combined SET def = REPLACE(def, '(8)', '⑻') WHERE def LIKE '%(8)%';
+UPDATE combined SET def = REPLACE(def, '(9)', '⑼') WHERE def LIKE '%(9)%';
+UPDATE combined SET def = REPLACE(def, '(10)', '⑽') WHERE def LIKE '%(10)%';
 
 -- 1.b. Process (Western) comma separators (replace with Pleco new line or Chinese list separators):
-UPDATE combined SET example = REPLACE(example, ',', '');
-UPDATE combined SET quote = REPLACE(quote, ',', '');
-UPDATE combined SET synonyms = REPLACE(synonyms, ',', '、');
-UPDATE combined SET antonyms = REPLACE(antonyms, ',', '、');
-UPDATE combined SET link = REPLACE(link, ',', '');
+UPDATE combined SET example = REPLACE(example, ',', '') WHERE example LIKE '%,%';
+UPDATE combined SET quote = REPLACE(quote, ',', '') WHERE quote LIKE '%,%';
+UPDATE combined SET synonyms = REPLACE(synonyms, ',', '、') WHERE synonyms LIKE '%,%';
+UPDATE combined SET antonyms = REPLACE(antonyms, ',', '、') WHERE antonyms LIKE '%,%';
+UPDATE combined SET link = REPLACE(link, ',', '') WHERE link LIKE '%,%';
 
 /* 1.c. Replace null entries to empty strings '' for combining/counting later
 (otherwise can causes problems with null results, 
@@ -190,26 +191,26 @@ UPDATE combined2 SET newdef =
     ELSE '(@'||defid||'@) '||newdef END);
 
 -- Replace with (unfilled) circled numbers:
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@1@)','①');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@2@)','②');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@3@)','③');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@4@)','④');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@5@)','⑤');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@6@)','⑥');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@7@)','⑦');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@8@)','⑧');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@9@)','⑨');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@10@)','⑩');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@11@)','⑪');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@12@)','⑫');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@13@)','⑬');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@14@)','⑭');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@15@)','⑮');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@16@)','⑯');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@17@)','⑰');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@18@)','⑱');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@19@)','⑲');
-UPDATE combined2 SET newdef = REPLACE(newdef, '(@20@)','⑳');
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@1@)','①') WHERE newdef LIKE '%(@1@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@2@)','②') WHERE newdef LIKE '%(@2@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@3@)','③') WHERE newdef LIKE '%(@3@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@4@)','④') WHERE newdef LIKE '%(@4@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@5@)','⑤') WHERE newdef LIKE '%(@5@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@6@)','⑥') WHERE newdef LIKE '%(@6@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@7@)','⑦') WHERE newdef LIKE '%(@7@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@8@)','⑧') WHERE newdef LIKE '%(@8@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@9@)','⑨') WHERE newdef LIKE '%(@9@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@10@)','⑩') WHERE newdef LIKE '%(@10@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@11@)','⑪') WHERE newdef LIKE '%(@11@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@12@)','⑫') WHERE newdef LIKE '%(@12@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@13@)','⑬') WHERE newdef LIKE '%(@13@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@14@)','⑭') WHERE newdef LIKE '%(@14@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@15@)','⑮') WHERE newdef LIKE '%(@15@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@16@)','⑯') WHERE newdef LIKE '%(@16@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@17@)','⑰') WHERE newdef LIKE '%(@17@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@18@)','⑱') WHERE newdef LIKE '%(@18@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@19@)','⑲') WHERE newdef LIKE '%(@19@)%';
+UPDATE combined2 SET newdef = REPLACE(newdef, '(@20@)','⑳') WHERE newdef LIKE '%(@20@)%';
 -- Note: MAX(defcount) suggests only need to go up to 19 (for November 2013 data).
 
 -- 3.a. Group by part of speech (title, pinyin, type):
@@ -260,13 +261,13 @@ CREATE TABLE combined4 AS
   GROUP BY title, pinyin;
 
 -- 5.a. Replace Chinese brackets with Western brackets in pinyin field (to show in Pleco):
-UPDATE combined4 SET pinyin = REPLACE(pinyin, '（', ' (');
-UPDATE combined4 SET pinyin = REPLACE(pinyin, '）', ') ');
+UPDATE combined4 SET pinyin = REPLACE(pinyin, '（', ' (') WHERE pinyin LIKE '%（%';
+UPDATE combined4 SET pinyin = REPLACE(pinyin, '）', ') ') WHERE pinyin LIKE '%）%';
 
 -- 5.b. Move bracketed Western names from title (Hanzi) field to start of definition field:
 UPDATE combined4 SET 
-  newdef4=substr(title,instr(title,'('))||' '||newdef4,
-  title=substr(title,1,instr(title,'(')-1)
+  newdef4=SUBSTR(title,instr(title,'('))||' '||newdef4,
+  title=SUBSTR(title,1,instr(title,'(')-1)
   WHERE title LIKE '%)';
 
 -- 5.c. Remove the square brackets from the non-Unicode characters (for importing to Pleco):

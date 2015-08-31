@@ -1,3 +1,6 @@
+20150123 Conversion
+- File deprecated, see MoEDict-Pleco-Conversion-Simplified.sh.
+
 20130508, 20130518, 20130619, 20130622 Conversion
 - Traditional to Simplified Chinese Character Conversion.
 - Specifically for MoEDict, but should be easy to generalise.
