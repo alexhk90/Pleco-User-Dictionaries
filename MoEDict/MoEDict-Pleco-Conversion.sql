@@ -1,3 +1,30 @@
+/* 20130622-MoEDict-Pleco-04c
+Info: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/
+
+Data: dict-revised.sqlite3.bz2 from http://kcwu.csie.org/%7Ekcwu/moedict/dict-revised.sqlite3.bz2 
+Source: http://3du.tw/
+Official: http://dict.revised.moe.edu.tw/
+
+- Extract to dict-revised.sqlite3 and open with sqlite:
+.schema reveals table structure: 
+definitions link to heteronyms link to entries (link to dicts but only 1 dict so unnecessary).
+Note: Counts: definitions = 213486; heteronyms = 165825; entries = 163093; dicts = 1.
+
+- Convert missing non Big 5 characters to Unicode: 
+use moedict-epub / db2unicode.pl and work on output (dict-revised.unicode.sqlite3).
+perl db2unicode.pl | sqlite3 dict-revised.unicode.sqlite3
+Note: the Perl script does not convert all missing characters.
+
+- Open the resulting file and run this script:
+sqlite3 dict-revised.unicode.sqlite3
+.read 20130622-MoEDict-Pleco-04c.sql
+
+- Export to Pleco flashcard format:
+.mode tabs
+.output MoEDict-04c-cards.txt
+select title,pinyin,newdef4 from combined4;
+*/
+
 -- Create new table (combined) with relevant columns for Pleco user dictionary.
 
 create table combined as
@@ -198,7 +225,11 @@ newdef4=substr(title,instr(title,'('))||' '||newdef4,
 title=substr(title,1,instr(title,'(')-1)
 where title like '%)';
 
+-- Remove the square brackets from the non-Unicode characters (for importing to Pleco):
+update combined4 set title = replace(title, '{[', '{') where title like '%{[%]}%';
+update combined4 set title = replace(title, ']}', '}') where title like '%{%]}%';
+
 -- Output counts for consistency checking:
-select count(*) from combined2; -- (unique title, pinyin, type, def) = 213486;
+select count(*) from combined2; -- (unique title, pinyin, type, def) = 213487;
 select count(*) from combined3; -- (unique title, pinyin, type) = 171378;
 select count(*) from combined4; -- (unique title, pinyin) = 165810.
