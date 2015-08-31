@@ -1,0 +1,314 @@
+20150123 Conversion
+- File deprecated, see MoEDict-Pleco-Conversion-Simplified.sh.
+
+20130508, 20130518, 20130619, 20130622 Conversion
+- Traditional to Simplified Chinese Character Conversion.
+- Specifically for MoEDict, but should be easy to generalise.
+
+0. Collect and format data (result in Conversion.ods).
+- Conversion-Always.csv has characters to always convert.
+- Conversion-If.csv has characters to convert if Pinyin matches.
+- Conversion-IfNot.csv has characters to convert if Pinyin does not match.
+- Conversion-AlwaysNot.csv has characters to not convert.
+
+sqlite3 MoEDict-04c-Simp02b.sqlite3
+
+-- Import conversion tables:
+.separator ','
+create table Always (Traditional,Simplified,Source,Notes);
+.import Conversion-Always.csv Always
+create table AlwaysIf (Traditional,Simplified,Source,Pinyin);
+.import Conversion-If.csv AlwaysIf
+create table AlwaysIfNot (Traditional,Simplified,Source,Pinyin);
+.import Conversion-IfNot.csv AlwaysIfNot
+create table AlwaysNot (Traditional,Simplified,Source);
+.import Conversion-AlwaysNot.csv AlwaysNot
+
+-- Delete title rows:
+delete from Always where Traditional='Traditional';
+delete from AlwaysIf where Traditional='Traditional';
+delete from AlwaysIfNot where Traditional='Traditional';
+delete from AlwaysNot where Traditional='Traditional';
+
+-- Import dictionary data, and duplicate (Traditional) title:
+.mode tabs
+create table dict (title,pinyin,def);
+.import MoEDict-04c-cards.txt dict
+alter table dict add column simptitle;
+update dict set simptitle=title;
+
+1. Conversion-Always.
+- Loop through Conversion-Always doing a search/replace for the conversion (Traditional to Simplified).
+
+dbfile="MoEDict-04c-Simp02b.sqlite3";
+minrow=$(sqlite3 $dbfile "select min(rowid) from Always;");
+maxrow=$(sqlite3 $dbfile "select max(rowid) from Always;");
+for (( j=minrow; j<=maxrow; j++ ))
+do
+	trad=$(sqlite3 $dbfile "select Traditional from Always where rowid=$j;");
+	simp=$(sqlite3 $dbfile "select Simplified from Always where rowid=$j;");
+	sqlstring="update dict set simptitle = replace(simptitle,'$trad','$simp') where simptitle like '%$trad%';";
+	echo $j' of '$maxrow': 'sqlite3 $dbfile '"'$sqlstring'"';
+	sqlite3 $dbfile "$sqlstring";
+done
+
+2. Conversion-If
+- (superseded, see below) Loop through Conversion-If to identify entries to consider, with Pinyin.
+dbfile="Conversion02.sqlite
+for (( j=2; j<=4; j++ ))
+do
+	trad=$(sqlite3 $dbfile "select Traditional from AlwaysIf where rowid=$j;");
+	simp=$(sqlite3 $dbfile "select Simplified from AlwaysIf where rowid=$j;");
+	pinyin=$(sqlite3 $dbfile "select Pinyin from AlwaysIf where rowid=$j;");
+	echo $j sqlite3 $dbfile "update dict set simptitle = replace(simptitle, '$trad','$simp') where simptitle like '%$trad%' and pinyin like '%$pinyin%';";
+	sqlite3 $dbfile "update dict set simptitle = replace(simptitle, '$trad','$simp') where simptitle like '%$trad%' and pinyin like '%$pinyin%';";
+done
+# Note: This SQL will not work correctly in cases where Pinyin in rest of title. Manual checking and/or correction may be necessary.
+
+- Alternately (and better), create temporary table with character position (charpos) field and then extract the relevant pinyin by looping through rows of this temporary table.
+Compare this extracted pinyin to decide whether or not to replace for this entry.
+
+dbfile="MoEDict-04c-Simp02b.sqlite3";
+iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIf;");
+imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIf;");
+for (( i=iminrow; i<=imaxrow; i++ ))
+do
+	trad=$(sqlite3 $dbfile "select Traditional from AlwaysIf where rowid=$i;");
+	simp=$(sqlite3 $dbfile "select Simplified from AlwaysIf where rowid=$i;");
+	pinyin=$(sqlite3 $dbfile "select Pinyin from AlwaysIf where rowid=$i;");
+
+	sqlite3 $dbfile "create table iftemp as
+		select title, instr(title,'$trad') as charpos, pinyin, pinyin as pychar from dict where title like '%$trad%';";
+
+	jminrow=$(sqlite3 $dbfile "select min(rowid) from iftemp;");
+	jmaxrow=$(sqlite3 $dbfile "select max(rowid) from iftemp;");
+	for (( j=jminrow; j<=jmaxrow; j++ ))
+	do
+		pytemp=$(sqlite3 $dbfile "select pinyin from iftemp where rowid=$j;");
+		charpos=$(sqlite3 $dbfile "select charpos from iftemp where rowid=$j;");
+		pyarr=($pytemp);
+		pychar=${pyarr[charpos-1]};
+		sqlite3 $dbfile "update iftemp set pychar = '$pychar' where rowid=$j;";
+
+		title=$(sqlite3 $dbfile "select title from iftemp where rowid=$j");
+		echo $i' of '$imaxrow' ('$trad' to '$simp'), '$j' of '$jmaxrow': '$title' ('$pytemp'): comparing '$pinyin' with '$pychar;
+		if [[ "$pychar" == "$pinyin"* ]]
+		then
+			sqlstring="update dict set simptitle = replace(simptitle, '$trad','$simp') where title='$title' and pinyin='$pytemp';";
+			echo sqlite3 $dbfile '"'$sqlstring'"';
+			sqlite3 $dbfile "$sqlstring";
+		else
+			echo '(pinyin does not match - do not convert)';
+		fi
+	done
+
+	sqlite3 $dbfile "drop table iftemp;";
+done
+
+# manual checks:
+dbfile="MoEDict-04c-Simp02b.sqlite3";
+iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIf;");
+imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIf;");
+for (( i=iminrow; i<=imaxrow; i++ ))
+do
+	trad=$(sqlite3 $dbfile "select Traditional from AlwaysIf where rowid=$i;");
+	simp=$(sqlite3 $dbfile "select Simplified from AlwaysIf where rowid=$i;");
+	pinyin=$(sqlite3 $dbfile "select Pinyin from AlwaysIf where rowid=$i;");
+
+	replaced=$(sqlite3 $dbfile "select count(*) from dict where title like '%$trad%' and simptitle like '%$simp%';");
+	total=$(sqlite3 $dbfile "select count(*) from dict where title like '%$trad%'");
+	echo $i' of '$imaxrow': '$trad' to '$simp' ('$pinyin'): replaced '$replaced' of '$total;
+
+	echo 'not replaced, expected replaced:';
+	sqlite3 $dbfile "select title,pinyin,simptitle from dict where title like '%$trad%' and pinyin like '%$pinyin%' and simptitle not like '%$simp%';";
+	echo 'replaced, expected not replaced:';
+	sqlite3 $dbfile "select title,pinyin,simptitle from dict where title like '%$trad%' and pinyin not like '%$pinyin%' and simptitle like '%$simp%';";
+done
+
+# fix exceptions from above:
+千里之堤，潰於蟻穴|qiān lǐ zhī tí kuì yú yǐ xuè|千里之堤，潰於蟻穴
+千里之行，始於足下|qiān lǐ zhī xíng shǐ yú zú xià|千里之行，始於足下
+己所不欲，勿施於人|jǐ suǒ bù yù wù shī yú rén|己所不欲，勿施於人
+老龜煮不爛，移禍於枯桑|lǎo guī zhǔ bù làn yí huò yú kū sāng|老龜煮不爛，移禍於枯桑
+運用之妙，在於一心|yùn yòng zhī miào zài yú yī xīn|運用之妙，在於一心
+防人之口，甚於防川|fáng rén zhī kǒu shèn yú fáng chuān|防人之口，甚於防川
+防民之口，甚於防川|fáng mín zhī kǒu shèn yú fáng chuān|防民之口，甚於防川
+# these are all due to the punctuation shifting the character position
+# manual inspection of above indicates all should be replaced:
+update dict set simptitle = replace(simptitle, '於','于') where title='千里之堤，潰於蟻穴' and pinyin='qiān lǐ zhī tí kuì yú yǐ xuè';
+update dict set simptitle = replace(simptitle, '於','于') where title='千里之行，始於足下' and pinyin='qiān lǐ zhī xíng shǐ yú zú xià';
+update dict set simptitle = replace(simptitle, '於','于') where title='己所不欲，勿施於人' and pinyin='jǐ suǒ bù yù wù shī yú rén';
+update dict set simptitle = replace(simptitle, '於','于') where title='老龜煮不爛，移禍於枯桑' and pinyin='lǎo guī zhǔ bù làn yí huò yú kū sāng';
+update dict set simptitle = replace(simptitle, '於','于') where title='運用之妙，在於一心' and pinyin='yùn yòng zhī miào zài yú yī xīn';
+update dict set simptitle = replace(simptitle, '於','于') where title='防人之口，甚於防川' and pinyin='fáng rén zhī kǒu shèn yú fáng chuān';
+update dict set simptitle = replace(simptitle, '於','于') where title='防民之口，甚於防川' and pinyin='fáng mín zhī kǒu shèn yú fáng chuān';
+# re-running manual exception check should now lead to zero exceptions
+
+
+3. Conversion-IfNot.
+- (as above but replace AlwaysIf with AlwaysIfNot and like with not like when comparing pinyin in temporary table for each row in AlwaysIfNot)
+
+dbfile="MoEDict-04c-Simp02b.sqlite3";
+iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIfNot;");
+imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIfNot;");
+for (( i=iminrow; i<=imaxrow; i++ ))
+do
+	trad=$(sqlite3 $dbfile "select Traditional from AlwaysIfNot where rowid=$i;");
+	simp=$(sqlite3 $dbfile "select Simplified from AlwaysIfNot where rowid=$i;");
+	pinyin=$(sqlite3 $dbfile "select Pinyin from AlwaysIfNot where rowid=$i;");
+
+	sqlite3 $dbfile "create table iftemp as
+		select title, instr(title,'$trad') as charpos, pinyin, pinyin as pychar from dict where title like '%$trad%';";
+
+	jminrow=$(sqlite3 $dbfile "select min(rowid) from iftemp;");
+	jmaxrow=$(sqlite3 $dbfile "select max(rowid) from iftemp;");
+	for (( j=jminrow; j<=jmaxrow; j++ ))
+	do
+		pytemp=$(sqlite3 $dbfile "select pinyin from iftemp where rowid=$j;");
+		charpos=$(sqlite3 $dbfile "select charpos from iftemp where rowid=$j;");
+		pyarr=($pytemp);
+		pychar=${pyarr[charpos-1]};
+		sqlite3 $dbfile "update iftemp set pychar = '$pychar' where rowid=$j;";
+
+		title=$(sqlite3 $dbfile "select title from iftemp where rowid=$j");
+		echo $i' of '$imaxrow' ('$trad' to '$simp'), '$j' of '$jmaxrow': '$title' ('$pytemp'): comparing '$pinyin' with '$pychar;
+		if [[ "$pychar" != "$pinyin"* ]]
+		then
+			sqlstring="update dict set simptitle = replace(simptitle, '$trad','$simp') where title='$title' and pinyin='$pytemp';";
+			echo sqlite3 $dbfile '"'$sqlstring'"';
+			sqlite3 $dbfile "$sqlstring";
+		else
+			echo '(pinyin matches - do not convert)';
+		fi
+	done
+
+	sqlite3 $dbfile "drop table iftemp;";
+done
+
+# manual checks:
+dbfile="MoEDict-04c-Simp02b.sqlite3";
+iminrow=$(sqlite3 $dbfile "select min(rowid) from AlwaysIfNot;");
+imaxrow=$(sqlite3 $dbfile "select max(rowid) from AlwaysIfNot;");
+for (( i=iminrow; i<=imaxrow; i++ ))
+do
+	trad=$(sqlite3 $dbfile "select Traditional from AlwaysIfNot where rowid=$i;");
+	simp=$(sqlite3 $dbfile "select Simplified from AlwaysIfNot where rowid=$i;");
+	pinyin=$(sqlite3 $dbfile "select Pinyin from AlwaysIfNot where rowid=$i;");
+
+	replaced=$(sqlite3 $dbfile "select count(*) from dict where title like '%$trad%' and simptitle like '%$simp%';");
+	total=$(sqlite3 $dbfile "select count(*) from dict where title like '%$trad%'");
+	echo $i' of '$imaxrow': '$trad' to '$simp' ('$pinyin'): replaced '$replaced' of '$total;
+
+	echo 'not replaced, expected replaced:';
+	sqlite3 $dbfile "select title,pinyin,simptitle from dict where title like '%$trad%' and pinyin not like '%$pinyin%' and simptitle not like '%$simp%';";
+	echo 'replaced, expected not replaced:';
+	sqlite3 $dbfile "select title,pinyin,simptitle from dict where title like '%$trad%' and pinyin like '%$pinyin%' and simptitle like '%$simp%';";
+done
+
+# manually fix exceptions from above:
+# (note some of the exceptions are due to pinyin of other characters, these are omitted from the following)
+防人之口，甚於防川|fáng rén zhī kǒu shèn yú fáng chuān|防人之口，什于防川
+防民之口，甚於防川|fáng mín zhī kǒu shèn yú fáng chuān|防民之口，什于防川
+# again these are all due to the punctuation shifting the character position
+# manual inspection of above indicates all (of above) should be replaced:
+update dict set simptitle = replace(simptitle, '什','甚') where title='防人之口，甚於防川' and pinyin='fáng rén zhī kǒu shèn yú fáng chuān';
+update dict set simptitle = replace(simptitle, '什','甚') where title='防民之口，甚於防川' and pinyin='fáng mín zhī kǒu shèn yú fáng chuān';
+# re-running manual exception check should now lead to zero true exceptions (as mentioned before will be some (5) due to other matching pinyin of other characters)
+
+# check (for MoEDict-04c-Simp02b.sqlite3)
+select count(*) from dict where title!=simptitle;
+101440
+
+(end)
+
+4. Conversion-AlwaysNot.
+(can use to generate list of unconsidered characters)
+
+(not implemented)
+
+5. Output to Pleco flashcard format.
+.mode tabs
+.output MoEDict-04c-Simp02b-cards.txt
+select simptitle||'['||title||']',pinyin,def from dict;
+
+---
+20130831 Conversion-Simp03-Unihan
+- Addition of characters from Unihan Traditional-Simplified conversions (kSimplifiedVariant) to previous conversion tables (see Conversion-Simp02b).
+- Starting point is resulting file "MoEDict-04c-Simp02b.sqlite3" from Conversion-Simp02b, though relatively easy to merge into new complete instructions for "MoEDict-04c-Simp03".
+
+0. Obtain data from Unihan.
+- Use Unihan_Variants.txt.
+- Convert characters from Unicode references to actual characters.
+- Extract only kSimplifiedVariant entries.
+- Resulting file simp.txt.
+- Convert to CSV: "sed 's/\t/,/g' simp.txt > simp.csv".
+- Clean up resulting CSV file if required (copy/paste to new file "simpA.csv" seemed to be required for some reason).
+
+1. Import Unihan data.
+- ".separator ','"
+- ".import simpA.csv Unihan"
+- select count(*) from Unihan;
+3041
+
+2. Manual clean up / additions
+- Add 滷=卤:
+"insert into Unihan Values('滷','Yiliya','卤');"
+
+3. Remove if already handled in other table.
+- Conversion-Always:
+select count(*) from Always;
+2662
+select count(*) from Unihan,Always where Always.Traditional = Unihan.Traditional;
+2375
+delete from Unihan where exists (select * from Always where Unihan.Traditional = Always.Traditional);
+select count(*) from Unihan;
+667
+- Conversion-If:
+select count(*) from AlwaysIf;
+5
+select count(*) from Unihan,AlwaysIf where AlwaysIf.Traditional = Unihan.Traditional;
+3
+delete from Unihan where exists (select * from AlwaysIf where Unihan.Traditional = AlwaysIf.Traditional);
+select count(*) from Unihan;
+664
+- Conversion-IfNot:
+select count(*) from AlwaysIfNot;
+5
+select count(*) from Unihan,AlwaysIfNot where AlwaysIfNot.Traditional = Unihan.Traditional;
+2
+delete from Unihan where exists (select * from AlwaysIfNot where Unihan.Traditional = AlwaysIfNot.Traditional);
+select count(*) from Unihan;
+662
+
+- Check multi-character conversions in above tables:
+select * from Always where Length(Traditional) > 1;
+藉口,借口,feng,借口、凭借，otherwise 藉
+憑藉,凭借,feng,借口、凭借，otherwise 藉
+select * from Unihan where Traditional like '%藉%';
+select * from Unihan where Traditional like '%憑%';
+select * from Unihan where Traditional like '%藉%';
+(no results found so OK)
+
+- Check if any multi-character conversions (i.e. T:S;S) remain in the Unihan tables:
+select * from Unihan where Simplified like '%;%';
+(no results found so OK)
+
+3. Merge Unihan into Conversion-AlwaysIf table.
+select count(*) from Always;
+2662
+select count(*) from Unihan;
+662
+- Move all Unihan data into Always:
+insert into Always select Unihan.Traditional, Unihan.Simplified, 'Unihan', Unihan.Type from Unihan;f
+select count(*) from Always;
+3324
+
+4. Re-run Conversion-Simp02b from import of dictionary data.
+- Firstly clear old data:
+drop table dict;
+- Now start from the following line: 
+"-- Import dictionary data, and duplicate (Traditional) title:"
+- Should be the same until count:
+select count(*) from dict where title!=simptitle;
+102050
+- Change output file to "MoEDict-04c-Simp03-cards.txt".

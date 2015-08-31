@@ -1,3 +1,22 @@
+20150123 MoEDict (+ Simplified)
+
+See updated files:
+- MoEDict-Pleco-Conversion.sql (MoEDict-05);
+- MoEDict-Pleco-Conversion-Simplified.sh (MoEDict-05-Simp03).
+
+Final version as official Pleco version of MoEDict now available:
+http://www.plecoforums.com/threads/official-moedict-pleco-release.4915/
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-7#post-29984)
+---
+20130622 MoEDict (+ Simplified)
+
+See updated files:
+- MoEDict-Pleco-Conversion.sql (MoEDict-04c);
+- MoEDict-Pleco-Conversion-Simplified (MoEDict-04c-Simp02a).
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-7#post-29984)
+---
 20130405 MoEDict
 
 See updated MoEDict-Pleco-Conversion.sql
