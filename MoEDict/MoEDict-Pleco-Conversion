@@ -1,0 +1,224 @@
+20130405 MoEDict
+
+See updated MoEDict-Pleco-Conversion.sql
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-4#post-29408)
+---
+20130404 MoEDict
+
+See updated MoEDict-Pleco-Conversion.sql
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-3#post-29394)
+---
+20130401 MoEDict
+ 
+Addendum (goes just before "Combine definition fields into single field."):
+- Process (Western) comma separators (replace with Pleco new line or Chinese list separators):
+update combined set example = replace(example, ',', '');
+update combined set quote = replace(quote, ',', '');
+update combined set synonyms = replace(synonyms, ',', '、');
+update combined set antonyms = replace(antonyms, ',', '、');
+update combined set link = replace(link, ',', '');
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-2#post-29339)
+---
+20130331 MoEDict
+ 
+- Follow notes "20130327 MoEDict" (reproduced below) up to creation of combined table, but add idx to this:
+create table combined as
+select definitions.id, definitions.idx, entries.title, heteronyms.pinyin,
+definitions.type, definitions.def, definitions.example, definitions.quote,
+definitions.synonyms, definitions.antonyms, definitions.link
+from definitions, heteronyms, entries
+where definitions.heteronym_id = heteronyms.id and heteronyms.entry_id = entries.id;
+ 
+- Combine definition fields into single field.
+ 
+Firstly replace null entries to empty strings '' for combining/counting later
+(otherwise can causes problems with null results,
+especially when using type for counting number of definitions),
+and at same time add label for synonyms and antonyms:
+update combined set
+type = case when coalesce(type, '') = '' then '' else type end;
+update combined set
+def = case when coalesce(def, '') = '' then '' else def end;
+update combined set
+example = case when coalesce(example, '') = '' then '' else example end;
+update combined set
+quote = case when coalesce(quote, '') = '' then '' else quote end;
+update combined set
+synonyms = case when coalesce(synonyms, '') = '' then '' else '同義詞：'||synonyms end;
+update combined set
+antonyms = case when coalesce(synonyms, '') = '' then '' else '反義詞：'||antonyms end;
+update combined set
+link = case when coalesce(link, '') = '' then '' else link end;
+ 
+Then combine into single field newdef:
+alter table combined add column newdef;
+update combined set newdef = '';
+update combined set newdef = case when coalesce(def, '') = ''
+then newdef else def end;
+update combined set newdef = (case when coalesce(example, '') = ''
+then newdef else (case when coalesce(newdef, '') = ''
+then example else newdef||''||example end) end);
+update combined set newdef = (case when coalesce(quote, '') = ''
+then newdef else (case when coalesce(newdef, '') = ''
+then quote else newdef||''||quote end) end);
+update combined set newdef = (case when coalesce(synonyms, '') = ''
+then newdef else (case when coalesce(newdef, '') = ''
+then synonyms else newdef||''||synonyms end) end);
+update combined set newdef = (case when coalesce(antonyms, '') = ''
+then newdef else (case when coalesce(newdef, '') = ''
+then antonyms else newdef||''||antonyms end) end);
+update combined set newdef = (case when coalesce(link, '') = ''
+then newdef else (case when coalesce(newdef, '') = ''
+then link else newdef||''||link end) end);
+ 
+Add numbering to combined definitions:
+order by idx then count up to current id.
+ 
+Create new table with defid (definition id for unique title/Hanzi, pinyin, part of speech/type) and defcount (total number of definitions for unique title/Hanzi, pinyin, part of speech/type) columns:
+create table combined2 as
+select id, title, pinyin, idx, type, newdef,
+(select count(*) from combined c2 where c1.title=c2.title and c1.pinyin=c2.pinyin and c1.type=c2.type and c2.id<=c1.id) as defid, (select count(*) from combined c2 where c1.title=c2.title and c1.pinyin=c2.pinyin and c1.type=c2.type) as defcount
+from combined c1;
+ 
+Add numbering (only if more than one definition in unique title, pinyin, type):
+update combined2 set newdef =
+(case when defcount<=1 then newdef
+else '(@'||defid||'@) '||newdef end);
+Replace with circled numbers:
+update combined2 set newdef = replace(newdef, '(@1@)','①');
+update combined2 set newdef = replace(newdef, '(@2@)','②');
+update combined2 set newdef = replace(newdef, '(@3@)','③');
+update combined2 set newdef = replace(newdef, '(@4@)','④');
+update combined2 set newdef = replace(newdef, '(@5@)','⑤');
+update combined2 set newdef = replace(newdef, '(@6@)','⑥');
+update combined2 set newdef = replace(newdef, '(@7@)','⑦');
+update combined2 set newdef = replace(newdef, '(@8@)','⑧');
+update combined2 set newdef = replace(newdef, '(@9@)','⑨');
+update combined2 set newdef = replace(newdef, '(@10@)','⑩');
+update combined2 set newdef = replace(newdef, '(@11@)','⑪');
+update combined2 set newdef = replace(newdef, '(@12@)','⑫');
+update combined2 set newdef = replace(newdef, '(@13@)','⑬');
+update combined2 set newdef = replace(newdef, '(@14@)','⑭');
+update combined2 set newdef = replace(newdef, '(@15@)','⑮');
+update combined2 set newdef = replace(newdef, '(@16@)','⑯');
+update combined2 set newdef = replace(newdef, '(@17@)','⑰');
+update combined2 set newdef = replace(newdef, '(@18@)','⑱');
+update combined2 set newdef = replace(newdef, '(@19@)','⑲');
+update combined2 set newdef = replace(newdef, '(@20@)','⑳');
+①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳
+(U+2460 to U+2473)
+Note: max(defcount) suggests only need to go up to 19.
+ 
+Group by part of speech (title, pinyin, type):
+create table combined3 as
+select title, pinyin, idx, type, defcount,
+group_concat(newdef, '') as newdef3
+from (select title, pinyin, idx, type, defcount, newdef
+from combined2
+order by title, pinyin, defid)
+group by title, pinyin, type;
+ 
+Add part of speech (type), bullets and new lines as appropriate:
+update combined3 set newdef3 =
+(case when coalesce(type, '') = ''
+then '◆ '||newdef3 else
+(case when defcount>1
+then '◆ <'||type||'> '||newdef3
+else '◆ <'||type||'> '||newdef3 end) end);
+ 
+Group by Hanzi/Pinyin (title, pinyin):
+create table combined4 as
+select title, pinyin, group_concat(newdef3, '') as newdef4
+from (select title, pinyin, idx, type, newdef3
+from combined3
+order by title, pinyin, idx)
+group by title, pinyin;
+ 
+Note: Counts: combined2 (unique title, pinyin, type, def) = 213486;
+combined3 (unique title, pinyin, type) = 171378;
+combined4 (unique title, pinyin) = 165810.
+ 
+Output combined4 as Pleco flashcards:
+.mode tabs
+.output MoEDict-cards03.txt
+select * from combined4;
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-2#post-29334)
+---
+20130327 MoEDict
+
+Source: dict-revised.sqlite3.bz2 from http://kcwu.csie.org/%7Ekcwu/moedict/dict-revised.sqlite3.bz2
+Information: http://3du.tw/
+ 
+- Extract to dict-revised.sqlite3 and open with sqlite:
+.schema reveals table structure:
+definitions link to heteronyms link to entries (link to dicts but only 1 dict so unnecessary).
+Note: Counts: definitions = 213486; heteronyms = 165825; entries = 163093; dicts = 1.
+ 
+- Convert missing non Big 5 characters to Unicode:
+use moedict-epub / db2unicode.pl and work on output (dict-revised.unicode.sqlite3).
+Note: the Perl script does not convert all missing characters.
+ 
+- Create new table (combined) with only relevant columns:
+create table combined as
+select definitions.id, entries.title, heteronyms.pinyin,
+definitions.type, definitions.def, definitions.example, definitions.quote,
+definitions.synonyms, definitions.antonyms, definitions.link 
+from definitions, heteronyms, entries
+where definitions.heteronym_id = heteronyms.id and heteronyms.entry_id = entries.id;
+ 
+- Reformat definitions into single definition field and use Pleco flashcard special characters (newlines, bold):
+---
+<{type}> {def}
+ 
+{example}
+ 
+[b]Quote:[/b] {quote}
+ 
+[b]Synonyms:[/b] {synonyms}
+ 
+[b]Antonyms:[/b] {antonyms}
+ 
+[b]Link:[/b] {link}
+---
+alter table combined add column newdef;
+ 
+update combined
+set newdef = case when coalesce(type, '') = ''
+then type else '<'||type||'> ' end;
+ 
+update combined
+set newdef = case when coalesce(newdef, '') = ''
+then def else newdef||def end;
+Note: The case statement here solves an issue where newdef not updated if currently null.
+ 
+update combined
+set newdef = case when coalesce(example, '') = ''
+then newdef else newdef||''||example end;
+ 
+update combined
+set newdef = case when coalesce(quote, '') = ''
+then newdef else newdef||''||'Quote: '||quote end;
+(and repeat for synonyms, antonyms, link)
+update combined set newdef = case when coalesce(synonyms, '') = ''
+then newdef else newdef||''||'Synonyms: '||synonyms end;
+update combined set newdef = case when coalesce(antonyms, '') = ''
+then newdef else newdef||''||'Antonyms: '||antonyms end;
+update combined set newdef = case when coalesce(link, '') = ''
+then newdef else newdef||''||'Link: '||link end;
+Note: Consider hyperlinks for link? Difficult if link has more than just the other entry/entries.
+ 
+- Output into Pleco flashcard format:
+{characters}{ TAB }{pinyin}{ TAB }{definition}
+.mode tabs
+.output MoEDict-cards.txt
+select title, pinyin, newdef from combined;
+ 
+- Import MoEDict-cards.txt into a Pleco user dictionary:
+Settings - Manage Dictionaries - Add User - Create New
+Import Entries
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/#post-29295)
