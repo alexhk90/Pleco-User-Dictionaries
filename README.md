@@ -7,6 +7,7 @@ Information and resources relating to conversion of various open source dictiona
 Taiwan Ministry of Eduction Revised Chinese Dictionary (教育部重編國語辭典修訂本):
 * [Official web interface](http://dict.revised.moe.edu.tw/)
 * [Pleco forums discussion thread] (http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/)
+* [Pleco user dictionary conversion] (MoEDict/README.md)
 
 ### LACD
 Taiwan Ministry of Eduction 兩岸常用詞典 (LACD):
