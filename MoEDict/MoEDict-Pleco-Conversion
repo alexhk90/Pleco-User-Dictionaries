@@ -1,3 +1,15 @@
+20130401 MoEDict
+ 
+Addendum (goes just before "Combine definition fields into single field."):
+- Process (Western) comma separators (replace with Pleco new line or Chinese list separators):
+update combined set example = replace(example, ',', '');
+update combined set quote = replace(quote, ',', '');
+update combined set synonyms = replace(synonyms, ',', '、');
+update combined set antonyms = replace(antonyms, ',', '、');
+update combined set link = replace(link, ',', '');
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-2#post-29339)
+---
 20130331 MoEDict
  
 - Follow notes "20130327 MoEDict" (reproduced below) up to creation of combined table, but add idx to this:
