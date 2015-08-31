@@ -15,3 +15,10 @@ Conversion-IfNot
 ---
 
 The source data and three output files mentioned above are included in this directory.
+
+Note: "Conversion-AlwaysNot" file also included but not currently used.
+
+---
+Updated the four output files with data from Unihan.
+
+(Ref: http://www.plecoforums.com/threads/the-moe-dictionary-is-now-open-source.3606/page-8#post-30492)
