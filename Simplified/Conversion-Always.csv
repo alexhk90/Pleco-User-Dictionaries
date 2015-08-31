@@ -2198,7 +2198,6 @@ Traditional,Simplified,Source,Notes
 煙,烟,SayJack,
 顏,颜,SayJack,
 鹽,盐,SayJack,
-菸,烟,SayJack,
 醃,腌,SayJack,
 閻,阎,SayJack,
 硯,砚,SayJack,
@@ -2658,7 +2657,7 @@ Traditional,Simplified,Source,Notes
 卻,却,feng,
 藉口,借口,feng,借口、凭借，otherwise 藉
 憑藉,凭借,feng,借口、凭借，otherwise 藉
-夥,伙/-,feng,夥 is only used in the PRC when it means 多.
-鹼,碱/硷,feng,Both characters exist in the PRC.
-餘,余/馀,feng,馀 is only supposed to be used when necessary to prevent confusion.
-摺,折/摺,feng,摺 is only used in the PRC when necessary to avoid confusion.
+夥,伙,Yiliya,feng: 夥 is only used in the PRC when it means 多.
+鹼,碱,Yiliya, I know for sure that 硷 is a non-standard (perhaps older) simplification. No longer used. Baidu automatically converts it to 碱.
+餘,余,Yiliya,feng: 馀 is only supposed to be used when necessary to prevent confusion.
+摺,折,Yiliya,feng: 摺 is only used in the PRC when necessary to avoid confusion.
