@@ -1,0 +1,137 @@
+20130506 Parse SayJack HTML Tables
+- Parse SayJack Traditional to Chinese Conversion Tables to useful format.
+
+"Traditional to Simplified Chinese Conversion Table"
+
+Source:
+http://www.sayjack.com/chinese/traditional-to-simplified-chinese-conversion-table/
+
+Table Structure:
+Traditional, Simplified, Pinyin, Frequency, Notes
+
+Script:
+sed -r 's_<h3(.+?)>(.+?)</h3>_,,\2,,Pinyin header_g' TSTable.htm > TSTable_01.csv
+sed -r "s_<div class='level(.+?) clearfix'>_,,,\1,Frequency header_g" TSTable_01.csv > TSTable_02.csv
+sed -r "s_<dl_\n<dl_g" TSTable_02.csv > TSTable_03.csv
+sed -r 's_<dl><dt><a href=(.+?)>(.+?)</a></dt><dd><sup>(.+?)</sup><b>⇒</b><a href=(.+?)>(.+?)</a></dd></dl>_\2,\5,,,\3_g' TSTable_03.csv > TSTable_04.csv
+sed -r "s_<dl class='m'><dt><a href=(.+?)>(.+?)</a></dt><dd><b>⇒</b><a href=(.+?)>(.+?)</a><sup>(.+?)</sup>,<a href=(.+?)>(.+?)</a><sup>(.+?)</sup></dd></dl>_\2,\4,,,\5\n\2,\7,,,\8_g" TSTable_04.csv > TSTable_05.csv
+sed -r "s_</div>__g" TSTable_05.csv > TSTable_06.csv
+cp TSTable_06.csv TSTable.csv
+rm TSTable_0*.csv
+
+Details:
+
+0. Manually remove pre- and post- table data.
+(save resulting file as TSTable.htm)
+
+1. Pinyin headers:
+
+From:
+<h3 id='a'>a</h3>
+<h3(.+?)>(.+?)</h3>
+To:
+,,a,,Pinyin header
+,,\2,,Pinyin header
+
+sed -r 's_<h3(.+?)>(.+?)</h3>_,,\2,,Pinyin header_g' TSTable.htm > TSTable_01.csv
+
+2. Frequency headers:
+
+From:
+<div class='level2 clearfix'>
+<div class=/'level(.+?) clearfix/'>
+To:
+,,,2,Frequency header
+,,,\1,Frequency header
+
+sed -r "s_<div class='level(.+?) clearfix'>_,,,\1,Frequency header_g" TSTable_01.csv > TSTable_02.csv
+
+3. Split entries to rows:
+
+Add newline to <dl><dt> (and <dl class='m'><dt>):
+
+sed -r "s_<dl_\n<dl_g" TSTable_02.csv > TSTable_03.csv
+
+4. Parse main data:
+
+From:
+<dl><dt><a href='/chinese/character/34297/'>藹</a></dt><dd><sup>3</sup><b>⇒</b><a href='/chinese/character/34108/'>蔼</a></dd></dl>
+<dl><dt><a href=(.+?)>(.+?)</a></dt><dd><sup>(.+?)</sup><b>⇒</b><a href=(.+?)>(.+?)</a></dd></dl>
+
+To:
+藹,蔼,,,3
+\2,\5,,,\3
+
+sed -r 's_<dl><dt><a href=(.+?)>(.+?)</a></dt><dd><sup>(.+?)</sup><b>⇒</b><a href=(.+?)>(.+?)</a></dd></dl>_\2,\5,,,\3_g' TSTable_03.csv > TSTable_04.csv
+
+5. Parse special case main data:
+
+From:
+
+<dl class='m'><dt><a href='/chinese/character/27784/'>沈</a></dt><dd><b>⇒</b><a href='/chinese/character/27784/'>沈</a><sup>9</sup>,<a href='/chinese/character/27785/'>沉</a><sup>8</sup></dd></dl>
+<dl class='m'><dt><a href=(.+?)>(.+?)</a></dt><dd><b>⇒</b><a href=(.+?)>(.+?)</a><sup>(.+?)</sup>,<a href=(.+?)>(.+?)</a><sup>(.+?)</sup></dd></dl>
+
+To:
+沈,沈,,,9
+沈,沉,,,8
+\2,\4,,,\5
+\2,\7,,,\8
+
+sed -r "s_<dl class='m'><dt><a href=(.+?)>(.+?)</a></dt><dd><b>⇒</b><a href=(.+?)>(.+?)</a><sup>(.+?)</sup>,<a href=(.+?)>(.+?)</a><sup>(.+?)</sup></dd></dl>_\2,\4,,,\5\n\2,\7,,,\8_g" TSTable_04.csv > TSTable_05.csv
+
+6. Remove footers:
+
+sed -r "s_</div>__g" TSTable_05.csv > TSTable_06.csv
+
+7. Merge data into flat file:
+
+(LibreOffice Calc formulas: IF and reference across/above)
+
+> TSTable-flat.csv
+Note: Count = 2693 (+ header row) (=2674+19)
+
+---
+"Chinese Characters Which Are Both Traditional and Simplified"
+
+Source: 
+http://www.sayjack.com/chinese/chinese-characters-both-traditional-and-simplified/
+
+0. Manually remove pre- and post- table data.
+(save resulting file as TSBoth.htm)
+
+1. Pinyin headers (as above):
+
+sed -r 's_<h3(.+?)>(.+?)</h3>_,,\2,,Pinyin header_g' TSBoth.htm > TSBoth_01.csv
+
+2. Frequency headers (as above):
+
+sed -r "s_<div class='level(.+?) clearfix'>_,,,\1,Frequency header_g" TSBoth_01.csv > TSBoth_02.csv
+
+3. Split entries to rows:
+
+Add newline to <li>:
+
+sed -r "s_<li>_\n<li>_g" TSBoth_02.csv > TSBoth_03.csv
+
+4. Parse main data:
+
+From:
+<li><a href='/chinese/character/21834/'>啊</a></li>
+<li><a href=(.+?)>(.+?)</a></li>
+
+To:
+啊,啊,,,0
+\2,\2,,,0
+
+sed -r 's_<li><a href=(.+?)>(.+?)</a></li>_\2,\2,,,0_g' TSBoth_03.csv > TSBoth_04.csv
+
+5. Remove footers (as above):
+
+sed -r "s_</div>__g" TSBoth_04.csv > TSBoth_05.csv
+
+7. Merge data into flat file:
+
+(LibreOffice Calc formulas: IF and reference across/above)
+
+> TSBoth-flat.csv
+Note: Count = 4700 (+ header row)
