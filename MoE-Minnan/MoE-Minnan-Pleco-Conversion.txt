@@ -14,5 +14,9 @@
 - - For each top-level entry:
 - - - For each heteronym:
 - - - - Hanzi = title;
-- - - - Pinyin = trs;
+- - - - Pinyin = @trs;
 - - - - Definition = definitions (type, def, examples) + synonyms.
+
+- Shell script: MoE-Minnan-Pleco-Conversion.sh
+- - requires jshon
+- - too inefficient due to multiple jshon calls per entry
