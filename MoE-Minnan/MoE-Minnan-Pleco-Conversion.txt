@@ -17,6 +17,9 @@
 - - - - Pinyin = @trs;
 - - - - Definition = definitions (type, def, examples) + synonyms.
 
-- Shell script: MoE-Minnan-Pleco-Conversion.sh
+- Shell script: MoE-Minnan-Pleco-Conversion.sh (deprecated/superseded/abandoned)
 - - requires jshon
 - - too inefficient due to multiple jshon calls per entry
+
+- Python script: MoE-Minnan-Pleco-Conversion.py
+- - requires python (at least 2.6 for json module)
