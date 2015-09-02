@@ -3,3 +3,6 @@
 
 # output Pleco flashcard files
 *-flashcards*.txt
+
+# output archives
+*.7z
