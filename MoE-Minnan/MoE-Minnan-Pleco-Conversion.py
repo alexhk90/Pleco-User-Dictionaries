@@ -35,17 +35,37 @@ for Entry in Entries:
   for Het in EntryHets:
     # trs (Pronunciation) and synonyms from heteronym level:
     Pinyin = Het['trs']
-    if 'synonyms' in Het: 
-      Syns = Het['synonyms']
-      # print( "Synonyms: ", Syns )
 
     DefString = ""
     HetDefs = Het['definitions']
     for Definition in HetDefs:
-      if DefString == "": # should be function for this StrJoin
-        DefString = Definition['def']
+      # type, def, examples from definition level:
+      CurrentType = Definition['type']
+      CurrentDef = Definition['def']
+      
+      CurrentDefString = "<" + CurrentType + ">" + PLECO_NEW_LINE
+      CurrentDefString += CurrentDef
+
+      if 'examples' in Definition:
+        ExampleString = ""
+        CurrentExamples = Definition['examples']
+        for Example in CurrentExamples:
+          if ExampleString == "": # should be built-in function for this StrJoin
+            ExampleString = Example
+          else:
+            ExampleString += PLECO_NEW_LINE + Example
+        CurrentDefString += PLECO_NEW_LINE + ExampleString
+
+      # add to output definition string
+      if DefString == "": # should be built-in function for this StrJoin
+        DefString = CurrentDefString
       else: 
-        DefString += PLECO_NEW_LINE + Definition['def']
+        DefString += PLECO_NEW_LINE + CurrentDefString
+
+    # add synonyms if element exists for heteronym
+    if 'synonyms' in Het: 
+      Syns = Het['synonyms']
+      DefString += PLECO_NEW_LINE + "似：" + Syns
 
     # Output to flashcard format...
     CardString = Hanzi + "\t" + "@" + Pinyin + "\t" + DefString + "\n"
