@@ -19,7 +19,11 @@
 
 - Shell script: MoE-Minnan-Pleco-Conversion.sh (deprecated/superseded/abandoned)
 - - requires jshon
-- - too inefficient due to multiple jshon calls per entry
+- - too inefficient due to multiple jshon calls per entry (see Python script instead)
 
 - Python script: MoE-Minnan-Pleco-Conversion.py
 - - requires python (at least 2.6 for json module)
+
+- Romanisation: diacritics to numeric tone conversion
+- - Mapping data created: Romanisation-tones.json
+- - Note source data appears to use Unicode combining accents

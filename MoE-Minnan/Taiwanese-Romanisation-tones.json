@@ -1,0 +1,86 @@
+{
+  "vowels":
+  {
+    "a":
+    {
+      "á": "acute",
+      "à": "grave",
+      "â": "circumflex",
+      "ā": "macron",
+      "a̍": "vertical",
+      "a": "none"
+    }, 
+    "e":
+    {
+      "é": "acute",
+      "è": "grave",
+      "ê": "circumflex",
+      "ē": "macron",
+      "e̍": "vertical",
+      "e": "none"
+    }, 
+    "i":
+    {
+      "í": "acute",
+      "ì": "grave",
+      "î": "circumflex",
+      "ī": "macron",
+      "i̍": "vertical",
+      "i": "none"
+    },
+    "o":
+    {
+      "ó": "acute",
+      "ò": "grave",
+      "ô": "circumflex",
+      "ō": "macron",
+      "o̍": "vertical",
+      "o": "none"
+    },
+    "u":
+    {
+      "ú": "acute",
+      "ù": "grave",
+      "û": "circumflex",
+      "ū": "macron",
+      "u̍": "vertical",
+      "u": "none"
+    },
+    "m":
+    {
+      "ḿ": "acute",
+      "m̀": "grave",
+      "m̂": "circumflex",
+      "m̄": "macron",
+      "m̍": "vertical",
+      "m": "none"
+    },
+    "n":
+    {
+      "ń": "acute",
+      "ǹ": "grave",
+      "n̂": "circumflex",
+      "n̄": "macron",
+      "n̍": "vertical",
+      "n": "none"
+    }
+  },
+  "diacritics":
+  {
+    "acute": 2,
+    "grave": 3,
+    "circumflex": 5,
+    "macron": 7,
+    "vertical": 8,
+    "none":
+      [
+        {
+          "p": 4,
+          "t": 4,
+          "k": 4,
+          "h": 4
+        },
+        1
+      ]
+  }
+}

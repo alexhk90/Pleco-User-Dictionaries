@@ -1,5 +1,5 @@
 # input database files
-*.json
+dict*.json
 
 # output Pleco flashcard files
 *-flashcards*.txt

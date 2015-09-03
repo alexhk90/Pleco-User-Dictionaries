@@ -6,7 +6,7 @@ print("2015-09-02 MoE-Minnan-Pleco-Conversion Script")
 import json
 
 DataFile = "dict-twblg.json"
-OutputFile = "MoE-Minnan-flashcards-v02.txt"
+OutputFile = "MoE-Minnan-flashcards-v03.txt"
 
 PLECO_NEW_LINE = ""
 DEF_NUMBERS = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫','⑬','⑭','⑮','⑮','⑰','⑱','⑲','⑳']
@@ -62,8 +62,8 @@ for Entry in Entries:
       if 'example' in Definition:
         CurrentExamples = Definition['example']
         ExampleSeparator = PLECO_NEW_LINE + "如："
-        ExampleString = "如：" + ExampleSeparator.join(CurrentExamples)
-        CurrentDefString += PLECO_NEW_LINE + ExampleString
+        ExampleString = ExampleSeparator + ExampleSeparator.join(CurrentExamples)
+        CurrentDefString += ExampleString
 
       DefStrings.append(CurrentDefString)
 
