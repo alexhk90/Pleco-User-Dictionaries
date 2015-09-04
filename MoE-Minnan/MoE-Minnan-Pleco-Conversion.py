@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-print("2015-09-02 MoE-Minnan-Pleco-Conversion Script")
+print("MoE-Minnan-Pleco-Conversion Script (v03_2015-09-03)")
 # See "MoE-Minnan-Pleco-Conversion.txt" for associated notes
 
 # use Python json module

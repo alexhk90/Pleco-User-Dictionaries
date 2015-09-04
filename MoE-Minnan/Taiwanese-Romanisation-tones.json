@@ -1,11 +1,19 @@
 {
+  "diacritics":
+  {
+    "́": "acute",
+    "̀": "grave",
+    "̂": "circumflex",
+    "̄": "macron",
+    "̍": "vertical"
+  },
   "vowels":
   {
     "a":
     {
       "á": "acute",
       "à": "grave",
-      "â": "circumflex",
+      "̂a": "circumflex",
       "ā": "macron",
       "a̍": "vertical",
       "a": "none"
@@ -64,8 +72,8 @@
       "n̍": "vertical",
       "n": "none"
     }
-  },
-  "diacritics":
+  }, 
+  "tones":
   {
     "acute": 2,
     "grave": 3,
