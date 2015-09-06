@@ -1,21 +1,10 @@
 #!/usr/bin/env python
 # Taiwanese Romanisation helper functions module
 
+# load diacritic tone to numeral mapping from data file
 import json
 MappingDataFile = "Taiwanese-Romanisation-tones.json"
 RawMappingData = json.load(open(MappingDataFile))
-
-# convert data from vowel to character and diacritic to character to vowel and diacritic
-RawVowelMapping = RawMappingData['vowels']
-CharacterVowelMapping = CharacterToneMapping = {}
-for Vowel in RawVowelMapping:
-  VowelCharacter = RawVowelMapping[Vowel]
-  for Character in VowelCharacter:
-    # add to mapping from character
-    # print( Character + " = " + Vowel + "-" + VowelCharacter[Character] )
-    CharacterVowelMapping[Character] = Vowel
-    CharacterToneMapping[Character] = VowelCharacter[Character]
-
 DiacriticToneMapping = RawMappingData['diacritics']
 ToneNumeralMapping = RawMappingData['tones']
 
@@ -39,13 +28,20 @@ def WordDiacriticToNumeric(Word):
   # append appropriate numeral
   Numeral = ToneNumeralMapping[Tone]
   if type(Numeral) is int:
+    # simple mapping from tone to numeral
     NewWord += "{0}".format(Numeral)
   elif type(Numeral) is list:
+    # list mapping:
+    # - first element by last letter
+    # - second element for all other last letters
+    # check last letter
     for StopLetter in Numeral[0].keys():
       if( Word[len(Word)-1] == StopLetter ):
+        # matches last letter
         NewWord += "{0}".format(Numeral[0][StopLetter])
         break
     else:
+      # does not match last letter
       NewWord += "{0}".format(Numeral[1])
   else:
     print( "unexpected tones object structure" )
