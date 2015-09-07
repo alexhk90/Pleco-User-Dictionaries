@@ -1,13 +1,12 @@
 #!/usr/bin/env python
-print("MoE-Minnan-Pleco-Conversion Script (v03_2015-09-03)")
+print("MoE-Minnan-Pleco-Conversion Script (v03_2015-09-07)")
 # See "MoE-Minnan-Pleco-Conversion.txt" for associated notes
 
-# use Python json module
+# load data from json
 import json
-
 DataFile = "dict-twblg.json"
-OutputFile = "MoE-Minnan-flashcards-v03.txt"
 
+OutputFile = "MoE-Minnan-flashcards-v03.txt"
 PLECO_NEW_LINE = ""
 DEF_NUMBERS = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫','⑬','⑭','⑮','⑮','⑰','⑱','⑲','⑳']
 
@@ -21,6 +20,8 @@ print("- Number of entries in input data file = {0}".format(len(Entries)))
 
 print("Creating blank output file (overwrites if exists)...")
 FileOut = open(OutputFile, "w")
+
+# ### cleanse <font.../font> and other ...> tags
 
 print("Looping through and processing input data file entries...")
 EntriesProcessed = 0
