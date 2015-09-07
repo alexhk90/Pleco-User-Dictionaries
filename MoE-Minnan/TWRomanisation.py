@@ -66,7 +66,7 @@ def WordDiacriticToNumeric(Word):
 # - recurses through all characters in WordSeparators,
 #   splitting the line segments using each character,
 #   effectively ignoring but maintaining these characters
-def LineDiacriticToNumeric(Line, SeparatorNo):
+def LineDiacriticToNumeric(Line, SeparatorNo=0):
   # current separator (start at 0 and recurse)
   Separator = WordSeparators[SeparatorNo]
 
@@ -107,5 +107,5 @@ def TestDiacriticToNumeric():
   for TestLine in TestLines:
     TestCount += 1
     print( "{0}: ".format(TestCount) + TestLine )
-    print( LineDiacriticToNumeric(TestLine, 0) )
+    print( LineDiacriticToNumeric(TestLine) )
 #TestDiacriticToNumeric()

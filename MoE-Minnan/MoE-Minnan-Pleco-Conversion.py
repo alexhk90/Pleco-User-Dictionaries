@@ -1,12 +1,23 @@
 #!/usr/bin/env python
-print("MoE-Minnan-Pleco-Conversion Script (v03_2015-09-07)")
+
+ScriptVersion = "v03"; ScriptDate = "2015-09-07"
+print("MoE-Minnan-Pleco-Conversion Script (" + ScriptVersion + "_" + ScriptDate + ")")
 # See "MoE-Minnan-Pleco-Conversion.txt" for associated notes
+
+NUMERIC_TONES = True # output version with diacritic tones to converted to numeric
+CLEANSE_DEF = True # cleanse some minor upstream data issues
+
+if NUMERIC_TONES:
+  import TWRomanisation
+  ToneToNumeric = TWRomanisation.LineDiacriticToNumeric
+  OutputFile = "MoE-Minnan-flashcards-" + ScriptVersion + "-numeric.txt"
+else:
+  OutputFile = "MoE-Minnan-flashcards-" + ScriptVersion + ".txt"
 
 # load data from json
 import json
 DataFile = "dict-twblg.json"
 
-OutputFile = "MoE-Minnan-flashcards-v03.txt"
 PLECO_NEW_LINE = ""
 DEF_NUMBERS = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩','⑪','⑫','⑬','⑭','⑮','⑮','⑰','⑱','⑲','⑳']
 
@@ -20,8 +31,6 @@ print("- Number of entries in input data file = {0}".format(len(Entries)))
 
 print("Creating blank output file (overwrites if exists)...")
 FileOut = open(OutputFile, "w")
-
-# ### cleanse <font.../font> and other ...> tags
 
 print("Looping through and processing input data file entries...")
 EntriesProcessed = 0
@@ -37,6 +46,8 @@ for Entry in Entries:
   for Het in EntryHets:
     # trs (Pronunciation) and synonyms from heteronym level:
     Pinyin = Het['trs']
+    if NUMERIC_TONES:
+      Pinyin = ToneToNumeric(Pinyin)
 
     # heteronym (output entry) level string
     DefStrings = []
@@ -58,6 +69,18 @@ for Entry in Entries:
         CurrentDefString += "<" + CurrentType + ">" + " "
 
       CurrentDef = Definition['def']
+      if CLEANSE_DEF:
+        # cleanse definition string (minor upstream data issues)
+        import re
+        # - as of version commited to moedict-data-twblg on Jan 1, 2015:
+        # 3 complete <font class=tlsound>...</font> tags
+        CurrentDef = re.sub('<font.*?>(.*?)</font>', r'\1', CurrentDef)
+        # 2 incomplete ...> tags ("nt class=tlsound>" and "ont>"
+        CurrentDef.replace("nt class=tlsound>", "")
+        CurrentDef.replace("ont>", "")
+
+      # ### TODO: numeric tones for CurrentDef and ExampleString 
+
       CurrentDefString += CurrentDef
 
       if 'example' in Definition:
