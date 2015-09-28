@@ -16,7 +16,7 @@ Data sources:
 * [Official web interface](http://twblg.dict.edu.tw/) (original source data)
 * [Converted data](https://github.com/g0v/moedict-data-twblg/) (includes JSON format)
 
-## Numeric tone conversion for Romanisation
+## Numeric Tone Conversion for Romanisation
 The source data has Romanisations with diacritic tone marks, but these do not always display well so instead they are converted to numeric tones.
 
 Latest download links (MoE-Minnan-04-numeric), output from source files:
