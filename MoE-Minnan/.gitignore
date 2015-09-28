@@ -6,3 +6,6 @@ dict*.json
 
 # output archives
 *.7z
+
+# python cache
+/__pycache__

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-ScriptVersion = "v03"; ScriptDate = "2015-09-07"
+ScriptVersion = "v04"; ScriptDate = "2015-09-08"
 print("MoE-Minnan-Pleco-Conversion Script (" + ScriptVersion + "_" + ScriptDate + ")")
 # See "MoE-Minnan-Pleco-Conversion.txt" for associated notes
 
@@ -9,7 +9,7 @@ CLEANSE_DEF = True # cleanse some minor upstream data issues
 
 if NUMERIC_TONES:
   import TWRomanisation
-  ToneToNumeric = TWRomanisation.LineDiacriticToNumeric
+  TonesToNumeric = TWRomanisation.LineDiacriticToNumeric
   OutputFile = "MoE-Minnan-flashcards-" + ScriptVersion + "-numeric.txt"
 else:
   OutputFile = "MoE-Minnan-flashcards-" + ScriptVersion + ".txt"
@@ -47,7 +47,7 @@ for Entry in Entries:
     # trs (Pronunciation) and synonyms from heteronym level:
     Pinyin = Het['trs']
     if NUMERIC_TONES:
-      Pinyin = ToneToNumeric(Pinyin)
+      Pinyin = TonesToNumeric(Pinyin)
 
     # heteronym (output entry) level string
     DefStrings = []
@@ -76,16 +76,21 @@ for Entry in Entries:
         # 3 complete <font class=tlsound>...</font> tags
         CurrentDef = re.sub('<font.*?>(.*?)</font>', r'\1', CurrentDef)
         # 2 incomplete ...> tags ("nt class=tlsound>" and "ont>"
-        CurrentDef.replace("nt class=tlsound>", "")
-        CurrentDef.replace("ont>", "")
-
-      # ### TODO: numeric tones for CurrentDef and ExampleString 
+        CurrentDef = CurrentDef.replace("nt class=tlsound>", "")
+        CurrentDef = CurrentDef.replace("ont>", "")
+      if NUMERIC_TONES:
+        CurrentDef = TonesToNumeric(CurrentDef)
 
       CurrentDefString += CurrentDef
 
       if 'example' in Definition:
         CurrentExamples = Definition['example']
         ExampleSeparator = PLECO_NEW_LINE + "如："
+        if NUMERIC_TONES:
+          NewExamples = []
+          for Example in CurrentExamples:
+            NewExamples.append(TonesToNumeric(Example))
+          CurrentExamples = NewExamples
         ExampleString = ExampleSeparator + ExampleSeparator.join(CurrentExamples)
         CurrentDefString += ExampleString
 

@@ -26,4 +26,5 @@
 
 - Romanisation: diacritics to numeric tone conversion
 - - Mapping data created: Romanisation-tones.json
+- - Helper module: TWRomanisation.py
 - - Note source data appears to use Unicode combining accents
