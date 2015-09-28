@@ -1,0 +1,32 @@
+{
+  "diacritics":
+  {
+    "́": "acute",
+    "̀": "grave",
+    "̂": "circumflex",
+    "̄": "macron",
+    "̍": "vertical"
+  },
+  "tones":
+  {
+    "acute": 2,
+    "grave": 3,
+    "circumflex": 5,
+    "macron": 7,
+    "vertical": 8,
+    "none":
+      [
+        {
+          "p": 4,
+          "t": 4,
+          "k": 4,
+          "h": 4
+        },
+        1
+      ]
+  },
+  "separators":
+  [" ","--","-","——","—"],
+  "punctuation":
+  [",","，","、",".","。","?","!","！",";",":","\"","(",")","/","…"]
+}
