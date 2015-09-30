@@ -1,5 +1,5 @@
 # MoE Minnan Pleco User Dictionary Conversion
-Taiwan Ministry of Education Minnan dictionary.
+Taiwan Ministry of Education Dictionary of Frequently-Used Taiwan Minnan (臺灣閩南語常用詞辭典)
 
 Original discussion thread:
 * [MoE Minnan and Hakka dictionaries (PlecoForums)](http://www.plecoforums.com/threads/moe-minnan-and-hakka-dictionaries.4938/)
@@ -15,6 +15,7 @@ Current Pleco user dictionary conversion source files:
 Data sources:
 * [Official web interface](http://twblg.dict.edu.tw/) (original source data)
 * [Converted data](https://github.com/g0v/moedict-data-twblg/) (includes JSON format)
+* [Official news announcement](http://english.moe.gov.tw/ct.asp?xItem=14785&ctNode=11446&mp=1)
 
 ## Numeric Tone Conversion for Romanisation
 The source data has Romanisations with diacritic tone marks, but these do not always display well so instead they are converted to numeric tones.
