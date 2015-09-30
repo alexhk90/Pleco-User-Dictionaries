@@ -1,10 +1,12 @@
 # MoE Minnan Pleco User Dictionary Conversion
-Taiwan Ministry of Education Dictionary of Frequently-Used Taiwan Minnan (臺灣閩南語常用詞辭典)
+Taiwan Ministry of Education Dictionary of Frequently-Used Taiwan Minnan (臺灣閩南語常用詞辭典).
+
+The source files in this directory relate to the conversion of the Taiwan **MoE** Dictionary of Frequently-Used Taiwan **Minnan** (henceforth MoE-Minnan) to Pleco user dictionary format.
 
 Original discussion thread:
 * [MoE Minnan and Hakka dictionaries (PlecoForums)](http://www.plecoforums.com/threads/moe-minnan-and-hakka-dictionaries.4938/)
 
-Latest download links (MoE-Minnan-04), output from source files:
+Latest download links (MoE-Minnan-v04), output from source files:
 * Pleco flashcards (.txt) (14,005 entries)
   * [MoE-Minnan-flashcards-v04.txt.7z](https://www.dropbox.com/s/96oalq272vw525c/MoE-Minnan-flashcards-v04.txt.7z?dl=0)
 
@@ -20,7 +22,7 @@ Data sources:
 ## Numeric Tone Conversion for Romanisation
 The source data has Romanisations with diacritic tone marks, but these do not always display well so instead they are converted to numeric tones.
 
-Latest download links (MoE-Minnan-04-numeric), output from source files:
+Latest download links (MoE-Minnan-v04-numeric), output from source files:
 * Pleco flashcards (.txt) (14,005 entries)
   * [MoE-Minnan-flashcards-v04-numeric.txt.7z](https://www.dropbox.com/s/yyqkg343zuhzjna/MoE-Minnan-flashcards-v04-numeric.txt.7z?dl=0)
 
