@@ -17,8 +17,10 @@ Taiwan Ministry of Eduction 兩岸常用詞典 (LACD):
 * [Source data](https://github.com/g0v/moedict-data-csld)
 
 ### Minnan
+Taiwan Ministry of Education Dictionary of Frequently-Used Taiwan Minnan (臺灣閩南語常用詞辭典):
 * [Pleco user dictionary conversion](MoE-Minnan) (includes download links)
 * [Pleco forums discussion thread](http://www.plecoforums.com/threads/moe-minnan-and-hakka-dictionaries.4938/)
+* [Official news announcement](http://english.moe.gov.tw/ct.asp?xItem=14785&ctNode=11446&mp=1)
 
 ### Hakka
 * [Pleco forums discussion thread](http://www.plecoforums.com/threads/moe-minnan-and-hakka-dictionaries.4938/)
