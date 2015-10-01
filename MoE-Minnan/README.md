@@ -7,8 +7,12 @@ Original discussion thread:
 * [MoE Minnan and Hakka dictionaries (PlecoForums)](http://www.plecoforums.com/threads/moe-minnan-and-hakka-dictionaries.4938/)
 
 Latest download links (MoE-Minnan-v04), output from source files:
-* Pleco flashcards (.txt) (14,005 entries)
+* Pleco flashcards (.txt) (14,005 entries):
   * [MoE-Minnan-flashcards-v04.txt.7z](https://www.dropbox.com/s/96oalq272vw525c/MoE-Minnan-flashcards-v04.txt.7z?dl=0)
+  * [MoE-Minnan-flashcards-v04.txt](https://www.mediafire.com/?a6qkqa2a5e4r018)
+* Pleco user dictionary file (.pqb) (14,005 entries): 
+  * [MoE-Minnan-v04.pqb.7z](https://www.dropbox.com/s/7qhj2sqys80v0j1/MoE-Minnan-v04.pqb.7z?dl=0)
+  * [MoE-Minnan-v04.pqb](https://www.mediafire.com/?hsxt81fx69auz8z)
 
 Current Pleco user dictionary conversion source files:
 * [Python script](MoE-Minnan-Pleco-Conversion.py) (includes conversion notes as comments)
@@ -23,8 +27,13 @@ Data sources:
 The source data has Romanisations with diacritic tone marks, but these do not always display well so instead they are converted to numeric tones.
 
 Latest download links (MoE-Minnan-v04-numeric), output from source files:
-* Pleco flashcards (.txt) (14,005 entries)
+* Pleco flashcards (.txt) (14,005 entries):
   * [MoE-Minnan-flashcards-v04-numeric.txt.7z](https://www.dropbox.com/s/yyqkg343zuhzjna/MoE-Minnan-flashcards-v04-numeric.txt.7z?dl=0)
+  * [MoE-Minnan-flashcards-v04-numeric.txt](https://www.mediafire.com/?hsxt81fx69auz8z)
+* Pleco user dictionary file (.pqb) (14,005 entries): 
+  * [MoE-Minnan-v04-numeric.pqb.7z](https://www.dropbox.com/s/gvve2578zi82cyj/MoE-Minnan-v04-numeric.pqb.7z?dl=0)
+  * [MoE-Minnan-v04-numeric.pqb](https://www.mediafire.com/?l82x99c26ncgdqv)
 
+Current numeric tone conversion source files:
 * [Python helper module](TWRomanisation.py) (used by Python script when NUMERIC_TONES constant set to True)
 * [JSON mapping data](Romanisation-tones.json) (used by Python helper module)
