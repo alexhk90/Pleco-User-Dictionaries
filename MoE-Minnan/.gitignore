@@ -4,6 +4,9 @@ dict*.json
 # output Pleco flashcard files
 *-flashcards*.txt
 
+# output Pleco user dictionaries
+*.pqb
+
 # output archives
 *.7z
 
