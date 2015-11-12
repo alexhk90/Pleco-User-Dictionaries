@@ -29,7 +29,7 @@ The source data has Romanisations with diacritic tone marks, but these do not al
 Latest download links (MoE-Minnan-v04-numeric), output from source files:
 * Pleco flashcards (.txt) (14,005 entries):
   * [MoE-Minnan-flashcards-v04-numeric.txt.7z](https://www.dropbox.com/s/yyqkg343zuhzjna/MoE-Minnan-flashcards-v04-numeric.txt.7z?dl=0)
-  * [MoE-Minnan-flashcards-v04-numeric.txt](https://www.mediafire.com/?hsxt81fx69auz8z)
+  * [MoE-Minnan-flashcards-v04-numeric.txt](http://www.mediafire.com/download/l3ij3xv8zg8tkwg/MoE-Minnan-flashcards-v04-numeric.txt)
 * Pleco user dictionary file (.pqb) (14,005 entries): 
   * [MoE-Minnan-v04-numeric.pqb.7z](https://www.dropbox.com/s/gvve2578zi82cyj/MoE-Minnan-v04-numeric.pqb.7z?dl=0)
   * [MoE-Minnan-v04-numeric.pqb](https://www.mediafire.com/?l82x99c26ncgdqv)
