@@ -36,4 +36,4 @@ Latest download links (MoE-Minnan-v04-numeric), output from source files:
 
 Current numeric tone conversion source files:
 * [Python helper module](TWRomanisation.py) (used by Python script when NUMERIC_TONES constant set to True)
-* [JSON mapping data](Romanisation-tones.json) (used by Python helper module)
+* [JSON mapping data](Taiwanese-Romanisation-tones.json) (used by Python helper module)
